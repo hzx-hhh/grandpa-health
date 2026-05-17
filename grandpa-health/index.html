@@ -1,0 +1,327 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
+    />
+    <meta name="theme-color" content="#ffffff" />
+    <title>爷爷记录</title>
+    <style>
+      :root{
+        --safe-top: env(safe-area-inset-top, 0px);
+        --safe-right: env(safe-area-inset-right, 0px);
+        --safe-bottom: env(safe-area-inset-bottom, 0px);
+        --safe-left: env(safe-area-inset-left, 0px);
+
+        /* 莫兰迪色系（柔和不刺眼） */
+        --c-1: #d8a19a; /* 浅砖红 */
+        --c-2: #d9c7a3; /* 暖麦黄 */
+        --c-3: #9fb7c8; /* 雾霾蓝 */
+        --c-4: #b8b0c5; /* 浅灰紫 */
+        --c-5: #a9c4b4; /* 鼠尾草绿 */
+        --c-6: #c3b6a8; /* 雾棕 */
+
+        --text-dark: #2b2b2b;
+        --success-green: #12a150;
+        --manage-bg: #4a4a4a;
+        --manage-bg-2: #5a5a5a;
+
+        --gap: 14px;
+        --radius: 26px;
+
+        /* 超大字体：随屏幕自适应 */
+        --btn-font: clamp(28px, 6.2vw, 58px);
+        --msg-font: clamp(38px, 8vw, 76px);
+        --manage-font: clamp(16px, 3.6vw, 22px);
+      }
+
+      *{ box-sizing: border-box; }
+      html, body{ height: 100%; margin: 0; }
+
+      body{
+        font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", "Noto Sans SC", Arial, sans-serif;
+        background: #f7f6f4; /* 柔和底色，避免小广告感 */
+        color: var(--text-dark);
+      }
+
+      .app{
+        min-height: 100vh;
+        min-height: 100svh; /* 更适配手机地址栏伸缩 */
+        padding: calc(var(--safe-top) + var(--gap)) calc(var(--safe-right) + var(--gap))
+                 calc(var(--safe-bottom) + var(--gap)) calc(var(--safe-left) + var(--gap));
+        display: grid;
+        grid-template-rows: 4fr 1fr; /* 前80% + 底部20% */
+        gap: 12px;
+      }
+
+      /* 核心记录区（80%） */
+      .core{
+        position: relative;
+        min-height: 0; /* 允许内部网格正确撑满 */
+      }
+
+      .grid{
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: 1fr 1fr 1fr;
+        gap: var(--gap);
+        height: 100%;
+      }
+
+      .btn{
+        width: 100%;
+        height: 100%;
+        border: 0;
+        border-radius: var(--radius);
+        padding: 14px 10px;
+
+        font-size: var(--btn-font);
+        font-weight: 900;
+        line-height: 1.12;
+        letter-spacing: 0.5px;
+        text-align: center;
+
+        /* 轻微阴影 + 细腻高光，告别“纯色广告块” */
+        box-shadow:
+          0 10px 22px rgba(0, 0, 0, 0.10),
+          inset 0 1px 0 rgba(255, 255, 255, 0.55);
+
+        touch-action: manipulation;
+        -webkit-tap-highlight-color: transparent;
+        user-select: none;
+      }
+
+      .btn:active{ transform: translateY(1px); filter: brightness(0.98); }
+      .btn:focus-visible{ outline: 4px solid rgba(18, 161, 80, 0.35); outline-offset: 2px; }
+
+      .c1{ background: var(--c-1); color: #fff; }
+      .c2{ background: var(--c-2); color: var(--text-dark); }
+      .c3{ background: var(--c-3); color: #fff; }
+      .c4{ background: var(--c-4); color: var(--text-dark); }
+      .c5{ background: var(--c-5); color: var(--text-dark); }
+      .c6{ background: var(--c-6); color: var(--text-dark); }
+
+      .success{
+        position: absolute;
+        inset: 0;
+        display: grid;
+        place-items: center;
+        padding: 24px;
+        text-align: center;
+        font-size: var(--msg-font);
+        font-weight: 900;
+        color: var(--success-green);
+      }
+
+      /* 底部管理区（20%） */
+      .manage{
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+        align-items: stretch;
+      }
+
+      .manage-btn{
+        width: 100%;
+        border: 0;
+        border-radius: 18px;
+        padding: 12px 10px;
+        font-size: var(--manage-font);
+        font-weight: 800;
+        color: #f2f2f2;
+        background: var(--manage-bg);
+        box-shadow:
+          0 8px 16px rgba(0, 0, 0, 0.10),
+          inset 0 1px 0 rgba(255, 255, 255, 0.10);
+        touch-action: manipulation;
+        -webkit-tap-highlight-color: transparent;
+        user-select: none;
+      }
+      .manage-btn.secondary{ background: var(--manage-bg-2); }
+      .manage-btn:active{ transform: translateY(1px); filter: brightness(0.98); }
+
+      .hidden{ display: none !important; }
+    </style>
+  </head>
+  <body>
+    <main class="app" aria-label="记录页面">
+      <!-- 核心记录区：2列3行，占屏幕前80% -->
+      <section class="core" aria-label="核心记录区">
+        <section id="buttons" class="grid" aria-label="记录按钮">
+          <button class="btn c1" data-type="刚起床下地" type="button">刚起床下地</button>
+          <button class="btn c2" data-type="久坐蹲后站起" type="button">久坐蹲后站起</button>
+          <button class="btn c3" data-type="刚吃完饭" type="button">刚吃完饭</button>
+          <button class="btn c4" data-type="洗完澡后" type="button">洗完澡后</button>
+          <button class="btn c5" data-type="活动散步后" type="button">活动散步后</button>
+          <button class="btn c6" data-type="其他或没干啥" type="button">其他或没干啥</button>
+        </section>
+
+        <section id="success" class="success hidden" role="status" aria-live="polite" aria-label="提示">
+          记录成功！
+        </section>
+      </section>
+
+      <!-- 底部管理区：占屏幕底部20% -->
+      <section class="manage" aria-label="管理区">
+        <button id="exportWeek" class="manage-btn" type="button">导出本周数据</button>
+        <button id="clearAll" class="manage-btn secondary" type="button">清空历史数据</button>
+      </section>
+    </main>
+
+    <script>
+      (function () {
+        const STORAGE_KEY = "grandpa_health_records_v2";
+
+        const buttonsEl = document.getElementById("buttons");
+        const successEl = document.getElementById("success");
+        const exportWeekEl = document.getElementById("exportWeek");
+        const clearAllEl = document.getElementById("clearAll");
+
+        let resetTimer = null;
+
+        function pad2(n){ return String(n).padStart(2, "0"); }
+        function formatLocalTime(d){
+          return (
+            d.getFullYear() + "-" +
+            pad2(d.getMonth() + 1) + "-" +
+            pad2(d.getDate()) + " " +
+            pad2(d.getHours()) + ":" +
+            pad2(d.getMinutes()) + ":" +
+            pad2(d.getSeconds())
+          );
+        }
+
+        function loadRecords(){
+          try{
+            const raw = localStorage.getItem(STORAGE_KEY);
+            if (!raw) return [];
+            const data = JSON.parse(raw);
+            return Array.isArray(data) ? data : [];
+          }catch{
+            return [];
+          }
+        }
+
+        function saveRecord(type){
+          const now = new Date();
+          const record = {
+            name: type,
+            timeLocal: formatLocalTime(now), // 本地可读时间
+            timeISO: now.toISOString()       // 精确时间（用于筛选/排序）
+          };
+          const all = loadRecords();
+          all.push(record);
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(all));
+        }
+
+        function showSuccess(){
+          buttonsEl.classList.add("hidden");
+          successEl.classList.remove("hidden");
+
+          if (resetTimer) window.clearTimeout(resetTimer);
+          resetTimer = window.setTimeout(() => {
+            successEl.classList.add("hidden");
+            buttonsEl.classList.remove("hidden");
+          }, 2000);
+        }
+
+        async function copyTextToClipboard(text){
+          // 优先使用现代剪贴板 API；失败则降级为 execCommand
+          try{
+            if (navigator.clipboard && navigator.clipboard.writeText){
+              await navigator.clipboard.writeText(text);
+              return true;
+            }
+          }catch{}
+
+          try{
+            const ta = document.createElement("textarea");
+            ta.value = text;
+            ta.setAttribute("readonly", "");
+            ta.style.position = "fixed";
+            ta.style.left = "-9999px";
+            ta.style.top = "0";
+            document.body.appendChild(ta);
+            ta.select();
+            ta.setSelectionRange(0, ta.value.length);
+            const ok = document.execCommand("copy");
+            document.body.removeChild(ta);
+            return ok;
+          }catch{
+            return false;
+          }
+        }
+
+        function getStartOfWeekLocal(now){
+          // 以周一为一周开始（本地时间）
+          const d = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0, 0);
+          const day = d.getDay(); // 0=周日..6=周六
+          const diffToMonday = (day === 0) ? -6 : (1 - day);
+          d.setDate(d.getDate() + diffToMonday);
+          return d;
+        }
+
+        function toDateSafe(r){
+          if (r && typeof r.timeISO === "string"){
+            const d = new Date(r.timeISO);
+            if (!Number.isNaN(d.getTime())) return d;
+          }
+          if (r && typeof r.timeLocal === "string"){
+            const d = new Date(r.timeLocal.replace(" ", "T"));
+            if (!Number.isNaN(d.getTime())) return d;
+          }
+          return null;
+        }
+
+        buttonsEl.addEventListener("click", (e) => {
+          const btn = e.target.closest("button");
+          if (!btn) return;
+
+          const type = btn.dataset.type || btn.textContent.trim();
+          saveRecord(type);
+          showSuccess();
+        });
+
+        exportWeekEl.addEventListener("click", async () => {
+          const all = loadRecords();
+          if (!all.length){
+            alert("暂无数据");
+            return;
+          }
+
+          const now = new Date();
+          const start = getStartOfWeekLocal(now);
+          const end = new Date(start.getTime() + 7 * 24 * 60 * 60 * 1000);
+
+          const week = all
+            .map((r) => ({ r, d: toDateSafe(r) }))
+            .filter((x) => x.d && x.d >= start && x.d < end)
+            .sort((a, b) => a.d - b.d)
+            .map((x) => x.r);
+
+          if (!week.length){
+            alert("暂无数据");
+            return;
+          }
+
+          const text = week.map((r, i) => `${i + 1}. ${r.timeLocal}  ${r.name}`).join("\n");
+          const ok = await copyTextToClipboard(text);
+          if (ok){
+            alert("数据已复制，请去微信粘贴发送。");
+          }else{
+            alert("复制失败：请手动长按选择并复制。\n\n" + text);
+          }
+        });
+
+        clearAllEl.addEventListener("click", () => {
+          const ok = confirm("确定要清空之前的所有记录吗？");
+          if (!ok) return;
+          localStorage.removeItem(STORAGE_KEY);
+          alert("已清空");
+        });
+      })();
+    </script>
+  </body>
+</html>
